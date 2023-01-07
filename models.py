@@ -14,6 +14,7 @@ def setup_db(app, database_path=database_path):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app
     db.init_app(app)
+    #db.drop_all()
     db.create_all()
 
 
@@ -44,14 +45,27 @@ class Actor(db.Model):
     name = db.Column(db.String)
     age = db.Column(db.Integer)
     gender = db.Column(db.String(1))
-    movies = db.relationship('ActorsInMovies', backref='actor', lazy=True)
+    actors_in_movies = db.relationship('ActorsInMovies', backref='actor', lazy=True)
 
-    def fields_dict(self):
+    def short(self):
       return {
-          'id': self.id,
-          'name': self.name,
-          'age': self.age,
-          'gender': self.gender
+        'id': self.id,
+        'name': self.name,
+        'age': self.age,
+        'gender': self.gender
+      }
+    
+    def long(self):
+      formatted_movies=[]
+      for actor_in_movie in self.actors_in_movies:
+        movie = Movie.query.filter_by(id=actor_in_movie.movie_id).first()
+        formatted_movies.append(movie.short())
+      return {
+        'id': self.id,
+        'name': self.name,
+        'age': self.age,
+        'gender': self.gender,
+        'movies': formatted_movies
       }
     
     def insert(self):
@@ -90,13 +104,25 @@ class Movie(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
     release_date = db.Column(db.DateTime)
-    actors = db.relationship('ActorsInMovies', backref='movie', lazy=True)
+    actors_in_movies = db.relationship('ActorsInMovies', backref='movie', lazy=True)
 
-    def fields_dict(self):
+    def short(self):
+      return {
+          'id': self.id,
+          'title': self.title,
+          'release_date': self.release_date
+      }
+    
+    def long(self):
+      formatted_actors=[]
+      for actor_in_movie in self.actors_in_movies:
+        actor = Actor.query.filter_by(id=actor_in_movie.actor_id).first()
+        formatted_actors.append(actor.short())
       return {
           'id': self.id,
           'title': self.title,
           'release_date': self.release_date,
+          'actors': formatted_actors
       }
     
     def insert(self):
@@ -132,8 +158,8 @@ class ActorsInMovies(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     actor_id = db.Column(db.Integer, db.ForeignKey('Actor.id'), nullable=False)
     movie_id = db.Column(db.Integer, db.ForeignKey('Movie.id'), nullable=False)
-
-    def fields_dict(self):
+    __table_args__ = (db.UniqueConstraint("actor_id", "movie_id"),)
+    def long(self):
       return {
           'id': self.id,
           'actor_id': self.actor_id,
@@ -146,18 +172,14 @@ class ActorsInMovies(db.Model):
           db.session.commit()
         except:
           db.session.rollback()
-          raise 
-        finally:
-          db.session.close()
+          raise
     
     def update(self):
         try:
           db.session.commit()
         except:
           db.session.rollback()
-          raise 
-        finally:
-          db.session.close()
+          raise
     
     def delete(self):
         try:
@@ -165,9 +187,7 @@ class ActorsInMovies(db.Model):
           db.session.commit()
         except:
           db.session.rollback()
-          raise 
-        finally:
-          db.session.close()
+          raise
     
     def __repr__(self):
       return'<Show {}>'.format(self.name)

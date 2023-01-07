@@ -22,7 +22,7 @@ def create_app(test_config=None):
         actors=Actor.query.order_by(Actor.name).all()
         formatted_actors=[]
         for actor in actors:
-            formatted_actors.append(actor.fields_dict())
+            formatted_actors.append(actor.long())
         return jsonify({
             "success":True,
             "actors": formatted_actors
@@ -41,7 +41,7 @@ def create_app(test_config=None):
             new_actor.insert()
             return jsonify({
                 "success": True,
-                "actor": new_actor.fields_dict()
+                "actor": new_actor.long()
             })
         except Exception as err:
             print(traceback.format_exc())
@@ -67,7 +67,7 @@ def create_app(test_config=None):
                 actor_for_update[0].update()
                 return jsonify({
                     "success":True,
-                    "updated":actor_for_update[0].fields_dict()
+                    "updated":actor_for_update[0].long()
                 })
             else:
                 abort(404)
@@ -102,7 +102,7 @@ def create_app(test_config=None):
         movies=Movie.query.order_by(Movie.title).all()
         formatted_movies=[]
         for movie in movies:
-            formatted_movies.append(movie.fields_dict())
+            formatted_movies.append(movie.long())
         return jsonify({
             "success":True,
             "movies": formatted_movies
@@ -120,7 +120,7 @@ def create_app(test_config=None):
             new_movie.insert()
             return jsonify({
                 "success": True,
-                "movie": new_movie.fields_dict()
+                "movie": new_movie.long()
             })
         except Exception as err:
             print(traceback.format_exc())
@@ -143,7 +143,7 @@ def create_app(test_config=None):
                 movie_for_update[0].update()
                 return jsonify({
                     "success":True,
-                    "updated":movie_for_update[0].fields_dict()
+                    "updated":movie_for_update[0].long()
                 })
             else:
                 abort(404)
@@ -171,7 +171,43 @@ def create_app(test_config=None):
             abort(404)
 
 
+    #ACTORS IN MOVIES
 
+    @app.route('/movies/<movie_id>/add_actor', methods=['PATCH'])
+    @requires_auth('patch:movies')
+    def add_actor_to_movie(movie_id):
+        body = request.get_json()
+        actor_id = body.get('actor_id')
+        new_actor_for_movie = ActorsInMovies(actor_id=actor_id, movie_id=movie_id)
+        try:
+            new_actor_for_movie.insert()
+            return jsonify({
+                "success": True,
+                "actor_in_movie": new_actor_for_movie.long()
+            })
+        except Exception as err:
+            print(traceback.format_exc())
+            abort(422)
+
+    @app.route('/movies/<movie_id>/delete_actor', methods=['PATCH'])
+    @requires_auth('patch:movies')
+    def delete_actor_from_movie(movie_id):
+        body = request.get_json()
+        actor_id = body.get('actor_id')
+        actor_to_delete_from_movie = ActorsInMovies.query.filter_by(movie_id=movie_id, actor_id=actor_id).first()
+        try:
+            actor_to_delete_from_movie.delete()
+            return jsonify({
+                "success": True,
+                "actor_deleted_from_movie": actor_to_delete_from_movie.long()
+            })
+        except Exception as err:
+            print(traceback.format_exc())
+            abort(422)
+    
+    
+    
+    
     #ERROR HANDLERS
 
     @app.errorhandler(400)
