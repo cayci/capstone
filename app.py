@@ -13,7 +13,8 @@ def create_app(test_config=None):
     app = Flask(__name__)
     setup_db(app)
     CORS(app)
-        
+
+    #ACTORS        
 
     @app.route('/actors', methods=['GET'])
     @requires_auth('get:actors')
@@ -93,10 +94,7 @@ def create_app(test_config=None):
             print(traceback.format_exc())
             abort(404)
 
-
-
-
-
+    #MOVIES
 
     @app.route('/movies', methods=['GET'])
     @requires_auth('get:movies')
@@ -171,23 +169,45 @@ def create_app(test_config=None):
         except:
             print(traceback.format_exc())
             abort(404)
+
+
+
+    #ERROR HANDLERS
+
+    @app.errorhandler(400)
+    def bad_request(error):
+        return jsonify({
+            "success": False,
+            "error": 400,
+            "message": "bad request"
+        }), 400
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
+    @app.errorhandler(401)
+    def unauthorized_error(error):
+        return jsonify({
+            "success": False,
+            "error": 401,
+            "message": "unauthorized"
+        }), 401
+    
+    
+    @app.errorhandler(404)
+    def not_found_error(error):
+        return jsonify({
+            "success": False,
+            "error": 404,
+            "message": "resource not found"
+        }), 404
+    
+    
+    @app.errorhandler(422)
+    def unprocessable(error):
+        return jsonify({
+            "success": False,
+            "error": 422,
+            "message": "unprocessable"
+        }), 422
 
 
     return app
@@ -198,39 +218,6 @@ app = create_app()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-'''
-@app.errorhandler(404)
-def not_found_error(error):
-    return render_template('errors/404.html'), 404
-
-@app.errorhandler(500)
-def server_error(error):
-    return render_template('errors/500.html'), 500
-
-
-if not app.debug:
-    file_handler = FileHandler('error.log')
-    file_handler.setFormatter(
-        Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]')
-    )
-    app.logger.setLevel(logging.INFO)
-    file_handler.setLevel(logging.INFO)
-    app.logger.addHandler(file_handler)
-    app.logger.info('errors')
-
-
-'''
 
 if __name__ == '__main__':
     app.run()
