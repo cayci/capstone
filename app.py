@@ -183,7 +183,7 @@ def create_app(test_config=None):
             new_actor_for_movie.insert()
             return jsonify({
                 "success": True,
-                "actor_in_movie": new_actor_for_movie.long()
+                "updated_movie": Movie.query.filter_by(id=movie_id).first().long()
             })
         except Exception as err:
             print(traceback.format_exc())
@@ -199,7 +199,7 @@ def create_app(test_config=None):
             actor_to_delete_from_movie.delete()
             return jsonify({
                 "success": True,
-                "actor_deleted_from_movie": actor_to_delete_from_movie.long()
+                "updated_movie": Movie.query.filter_by(id=movie_id).first().long()
             })
         except Exception as err:
             print(traceback.format_exc())
