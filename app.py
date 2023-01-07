@@ -94,6 +94,102 @@ def create_app(test_config=None):
             abort(404)
 
 
+
+
+
+
+    @app.route('/movies', methods=['GET'])
+    @requires_auth('get:movies')
+    def get_movies():
+        movies=Movie.query.order_by(Movie.title).all()
+        formatted_movies=[]
+        for movie in movies:
+            formatted_movies.append(movie.fields_dict())
+        return jsonify({
+            "success":True,
+            "movies": formatted_movies
+        })
+
+
+    @app.route('/movies', methods=['POST'])
+    @requires_auth('post:movies')
+    def create_movie():
+        body = request.get_json()
+        title = body.get('title')
+        release_date = body.get('release_date')
+        new_movie = Movie(title=title, release_date=release_date)
+        try:
+            new_movie.insert()
+            return jsonify({
+                "success": True,
+                "movie": new_movie.fields_dict()
+            })
+        except Exception as err:
+            print(traceback.format_exc())
+            abort(422)
+
+
+    @app.route('/movies/<movie_id>', methods=['PATCH'])
+    @requires_auth('patch:movies')
+    def update_movie(movie_id):
+        try:
+            movie_for_update = Movie.query.filter_by(id=movie_id).all()
+            if len(movie_for_update) == 1:
+                body=request.get_json()
+                title = body.get("title")
+                release_date = body.get("release_date")
+                if title is not None: 
+                    movie_for_update[0].title = title
+                if release_date is not None:
+                    movie_for_update[0].release_date = release_date
+                movie_for_update[0].update()
+                return jsonify({
+                    "success":True,
+                    "updated":movie_for_update[0].fields_dict()
+                })
+            else:
+                abort(404)
+        except Exception as err:
+            print(traceback.format_exc())
+            abort(422)
+
+
+    @app.route('/movies/<movie_id>', methods=['DELETE'])
+    @requires_auth('delete:movies')
+    def delete_movie(movie_id):
+        try:
+            movie_for_deletion = Movie.query.filter_by(id=movie_id).all()
+            pprint(movie_for_deletion)
+            if len(movie_for_deletion) == 1:
+                movie_for_deletion[0].delete()
+                return jsonify({
+                    "success":True,
+                    "delete": movie_id
+                })
+            else:
+                abort(404)
+        except:
+            print(traceback.format_exc())
+            abort(404)
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     return app
 
 app = create_app()

@@ -105,18 +105,14 @@ class Movie(db.Model):
           db.session.commit()
         except:
           db.session.rollback()
-          raise 
-        finally:
-          db.session.close()
+          raise
     
     def update(self):
         try:
           db.session.commit()
         except:
           db.session.rollback()
-          raise 
-        finally:
-          db.session.close()
+          raise
     
     def delete(self):
         try:
@@ -124,12 +120,10 @@ class Movie(db.Model):
           db.session.commit()
         except:
           db.session.rollback()
-          raise 
-        finally:
-          db.session.close()
+          raise
    
     def __repr__(self):
-      return'<Movie {}>'.format(self.name)
+      return'<Movie {}>'.format(self.title)
 
 
 class ActorsInMovies(db.Model):
