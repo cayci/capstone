@@ -16,7 +16,7 @@ def create_app(test_config=None):
         
 
     @app.route('/actors', methods=['GET'])
-    #@requires_auth('get:actors')
+    @requires_auth('get:actors')
     def get_actors():
         actors=Actor.query.order_by(Actor.name).all()
         formatted_actors=[]
@@ -29,7 +29,7 @@ def create_app(test_config=None):
 
 
     @app.route('/actors', methods=['POST'])
-    #@requires_auth('post:actors')
+    @requires_auth('post:actors')
     def create_actor():
         body = request.get_json()
         name = body.get('name')
@@ -48,7 +48,7 @@ def create_app(test_config=None):
 
 
     @app.route('/actors/<actor_id>', methods=['PATCH'])
-    #@requires_auth('patch:actors')
+    @requires_auth('patch:actors')
     def update_actor(actor_id):
         try:
             actor_for_update = Actor.query.filter_by(id=actor_id).all()
@@ -76,7 +76,7 @@ def create_app(test_config=None):
 
 
     @app.route('/actors/<actor_id>', methods=['DELETE'])
-    #@requires_auth('delete:actirs')
+    @requires_auth('delete:actors')
     def delete_actor(actor_id):
         try:
             actor_for_deletion = Actor.query.filter_by(id=actor_id).all()
