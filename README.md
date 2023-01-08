@@ -2,15 +2,27 @@
 This is the final project of Udacity's FSND course.
 I signed up for this course in order to sharpen my web development skills.
 
-To start server, on the Command Line type:
+# Start Server 
+To start server, on the Command Line:
 pip3 install -r requirements.txt
 python3 app.py
 
-To run tests, on the Command Line type:
+# Automated Testing
+To run tests, on the Command Line:
+source ./setup.sh
 python3 tests.py
 
+# Manual Testing
+I saved the Postman export as capstone.postman_collection.json.
 
-Expected endpoints and behaviors
+# JWTs
+Saved in setup.sh, as well as in the Postman Collection.
+
+# JWT Expiration
+I disabled the option for JWT Expiration Checking in the jwt.decode() method call so that my JWTs wouldn't expire prior to code review.
+
+
+# Expected endpoints and behaviors
 
 GET '/actors'
 Fetches a dictionary of actors and their attributes.
