@@ -73,7 +73,7 @@ def create_app(test_config=None):
                 abort(404)
         except Exception as err:
             print(traceback.format_exc())
-            abort(422)
+            abort(404)
 
 
     @app.route('/actors/<actor_id>', methods=['DELETE'])
@@ -81,7 +81,6 @@ def create_app(test_config=None):
     def delete_actor(actor_id):
         try:
             actor_for_deletion = Actor.query.filter_by(id=actor_id).all()
-            pprint(actor_for_deletion)
             if len(actor_for_deletion) == 1:
                 actor_for_deletion[0].delete()
                 return jsonify({
