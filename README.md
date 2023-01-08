@@ -21,6 +21,16 @@ Saved in setup.sh, as well as in the Postman Collection.
 # JWT Expiration
 I disabled the option for JWT Expiration Checking in the jwt.decode() method call so that my JWTs wouldn't expire prior to code review.
 
+# Hosting
+The application is hosted at https://capstone-7zyt.onrender.com
+
+# Auth setup 
+These were the steps I took to create the included JWTs: 
+1) I took the URL the FSND Auth0 lesson, and modified it as below:
+https://dev-rof0zfah257z8231.us.auth0.com/authorize?audience=capstone&response_type=token&client_id=T4n62ZWm4APk8yRaQRIz7zN2mwu9Or7O&redirect_uri=https://capstone-7zyt.onrender.com/callback
+2) Login as the user.  
+3) Copy and paste the callback URL, which includes the new JWT token.  
+
 
 # Expected endpoints and behaviors
 
