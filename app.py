@@ -156,7 +156,6 @@ def create_app(test_config=None):
     def delete_movie(movie_id):
         try:
             movie_for_deletion = Movie.query.filter_by(id=movie_id).all()
-            pprint(movie_for_deletion)
             if len(movie_for_deletion) == 1:
                 movie_for_deletion[0].delete()
                 return jsonify({
